@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Verificación del proyecto
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Comprobar que el paquete `src` es importable
+        run: |
+          python -c "import src; from src import config, data, model, train, evaluate, predict; print('src OK ->', src.__version__)"
+
+      - name: Comprobar la sintaxis de la aplicación Streamlit
+        run: python -m py_compile app/app.py
+
+      - name: Comprobar que el modelo entrenado carga y predice
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          import numpy as np
+          from src.config import CHECKPOINT_PATH, METADATA_PATH
+          from src.predict import load_model, predict_image
+
+          model, metadata = load_model(CHECKPOINT_PATH, METADATA_PATH, device="cpu")
+          imagen = Image.fromarray(np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8))
+          prediccion = predict_image(model, imagen, device="cpu")
+          assert prediccion.class_name in metadata["classes"], prediccion
+          print(f"Modelo OK -> {prediccion.class_name} ({prediccion.confidence:.2%})")
+          PY
+
+      - name: Ejecutar las pruebas unitarias
+        run: python -m pytest tests -q
+
+      - name: Validar las especificaciones de OpenSpec
+        run: |
+          npx --yes @fission-ai/openspec@latest validate --strict
+
+      - name: Comprobar que el README documenta los comandos principales
+        run: |
+          grep -q "streamlit run app/app.py" README.md
+          grep -q "python -m src.train" README.md
+          grep -q "python -m src.evaluate" README.md
+          echo "README OK"

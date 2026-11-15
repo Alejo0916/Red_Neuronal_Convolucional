@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------
+# Dependencias del proyecto: Red Neuronal Convolucional sobre CIFAR-10
+#
+# Instalación:
+#   python -m venv .venv
+#   .venv\Scripts\activate           (Windows)
+#   source .venv/bin/activate        (Linux / macOS)
+#   pip install -r requirements.txt
+#
+# Nota sobre PyTorch:
+#   - CPU  : pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#   - CUDA : pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+#   Las versiones de abajo son las de referencia (wheel genérico de PyPI).
+# ---------------------------------------------------------------------------
+
+# --- Core del proyecto -----------------------------------------------------
+torch==2.15.0
+torchvision==0.29.2
+numpy==2.5.4
+pandas==3.1.1
+scikit-learn==1.9.1
+scipy==1.18.1
+pillow==13.0.0
+
+# --- Visualización y evaluación -------------------------------------------
+matplotlib==3.11.2
+seaborn==0.13.2
+tqdm==4.70.1
+
+# --- Aplicación web --------------------------------------------------------
+streamlit==1.67.0
+
+# --- Notebook de experimentación (opcional, solo para desarrollo) ---------
+jupyter==1.1.1
+nbformat==5.11.1
+nbconvert==7.17.2
+ipykernel==7.4.0

@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "Red Neuronal Convolucional para clasificación de imágenes (CIFAR-10)"
+message: "Si utilizas este proyecto, cita el siguiente trabajo."
+type: software
+authors:
+  - family-names: "Alejandro"
+    given-names: "Alonso"
+    alias: "Alejo0916"
+repository-code: "https://github.com/Alejo0916/Red_Neuronal_Convolucional"
+url: "https://github.com/Alejo0916/Red_Neuronal_Convolucional"
+abstract: >-
+  Proyecto de Deep Learning que implementa una Red Neuronal Convolucional
+  (PyTorch) entrenada desde cero sobre el dataset CIFAR-10 para clasificar
+  imágenes en 10 categorías. Incluye pipeline de datos reproducible, notebook
+  de experimentación para Google Colab, evaluación con métricas y matriz de
+  confusión, y una aplicación de Streamlit para la predicción sobre imágenes
+  arbitrarias.
+keywords:
+  - deep-learning
+  - convolutional-neural-network
+  - pytorch
+  - computer-vision
+  - image-classification
+  - cifar-10
+  - streamlit
+license: MIT
+version: 1.0.0
+date-released: "2025-11-15"

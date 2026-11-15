@@ -1,0 +1,19 @@
+# Normalización de finales de línea
+* text=auto eol=lf
+
+# Archivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pt binary
+*.tar.gz binary
+*.ipynb text eol=lf
+
+# Documentación
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.py text eol=lf
+*.cff text eol=lf

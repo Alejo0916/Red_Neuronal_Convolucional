@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ---------------------------------------------------------------------------
+# Datos y artefactos de entrenamiento (se regeneran con `python -m src.train`)
+# ---------------------------------------------------------------------------
+data/
+*.tar.gz
+checkpoints/
+runs/
+wandb/
+
+# ---------------------------------------------------------------------------
+# Modelos y reportes
+# ---------------------------------------------------------------------------
+# `models/` y `reports/` SÍ se versionan: contienen el checkpoint entrenado,
+# las métricas y las figuras que documentan los resultados del proyecto.
+# Los checkpoints intermedios (*_last.pt, *.tmp) sí se ignoran.
+*.tmp
+*_last.pt
+*.tmp.pt
+
+# ---------------------------------------------------------------------------
+# Logs y archivos temporales
+# ---------------------------------------------------------------------------
+*.log
+*.err
+*.out
+.cache/
+.ipynb_checkpoints/
+scratch/
+tmp/
+temp/
+
+# ---------------------------------------------------------------------------
+# Secretos y configuración local
+# ---------------------------------------------------------------------------
+.env
+.env.local
+*.pem
+*.key
+
+# ---------------------------------------------------------------------------
+# Editores y sistema operativo
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
