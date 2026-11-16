@@ -9,6 +9,7 @@ Ejecución:
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -18,7 +19,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import CHECKPOINT_PATH  # noqa: E402
+from src.config import CHECKPOINT_PATH, CLASSES  # noqa: E402
 
 AppTest = pytest.importorskip("streamlit.testing.v1", reason="streamlit no está instalado").AppTest
 
@@ -77,3 +78,16 @@ def test_la_app_predice_una_imagen_de_ejemplo(app):
     assert len(app.metric) >= 1
     assert app.metric[0].label == "Clase predicha"
     assert app.metric[0].value
+
+
+def test_el_manifiesto_de_ejemplos_tiene_clases_validas():
+    manifest_path = PROJECT_ROOT / "app" / "assets" / "examples" / "manifest.json"
+    if not manifest_path.exists():
+        pytest.skip("No hay imágenes de ejemplo exportadas")
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert len(manifest) >= 10
+    for entrada in manifest:
+        assert (PROJECT_ROOT / "app" / "assets" / "examples" / entrada["file"]).exists()
+        assert entrada["class_name"] in CLASSES
+        assert 0 <= entrada["class_index"] < len(CLASSES)

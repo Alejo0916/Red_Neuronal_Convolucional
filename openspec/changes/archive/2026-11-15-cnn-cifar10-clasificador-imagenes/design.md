@@ -80,6 +80,20 @@ Restricciones reales del entorno de referencia: CPU de 12 hilos (sin CUDA), desc
 **Decisión:** `openspec/specs/` (requisitos duraderos) + `openspec/changes/` (historial) + `openspec/config.yaml` (idioma `es`).
 **Rationale:** aporta trazabilidad formal requisito→implementación→prueba, exigida implícitamente al pedir "documentación con OpenSpec".
 
+### D12. DataLoader con workers limitados y sin persistencia
+**Decisión:** `num_workers=2` por defecto solo para el loader de entrenamiento; los loaders de validación y prueba usan `num_workers=0`; `persistent_workers=False` en los tres.
+**Alternativas:** `num_workers=4` con `persistent_workers=True`.
+**Rationale:** en Windows los workers de `DataLoader` se crean con `spawn` y **cada uno recibe una copia serializada del dataset** (~150 MB) además del runtime de PyTorch. Con 4 workers persistentes en train + val el proceso llegaba a consumir > 5 GB y el entrenamiento abortó con `DefaultCPUAllocator: not enough memory`. Con 2 workers sin persistencia el consumo se mantiene estable y la ganancia de paralelismo sigue siendo marginal (el preprocesamiento son ~7 s de los ~230 s por época).
+
+### D13. Dos checkpoints: "mejor modelo" y "estado reanudable"
+**Decisión:** `models/cnn_cifar10.pt` contiene **el mejor modelo** según accuracy de validación (es el que consume la app y el que se versiona); `models/cnn_cifar10_last.pt` contiene el **estado completo** de la última época (pesos + optimizador + scheduler + historial) y permite reanudar con `--resume-from`.
+**Alternativas:** guardar un único checkpoint con todo; reanudar desde cero si el proceso se interrumpe.
+**Rationale:** separar "qué modelo se entrega" de "cómo se recupera un entrenamiento interrumpido" mantiene el artefacto versionado limpio (≈ 4,4 MB) sin perder la capacidad de continuar, y permite que el historial completo llegue hasta la última época.
+
+### D14. Evaluación sin cargar todo el test set en memoria
+**Decisión:** la rejilla de predicciones accede a las imágenes del test set bajo demanda (`dataset[index]`), en lugar de apilar los 10 000 tensores normalizados en memoria (≈ 123 MB).
+**Rationale:** mantiene la evaluación reproducible en equipos con poca RAM, que es el escenario real de este proyecto.
+
 ## Risks / Trade-offs
 
 - **Tiempo de entrenamiento en CPU** → el diseño de la CNN prioriza un número de parámetros razonable; se usan `num_workers` adaptativos y `pin_memory`. El número de épocas por defecto (30) es un compromiso entre calidad y tiempo; se documenta cómo reducirlo.

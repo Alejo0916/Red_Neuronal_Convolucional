@@ -151,7 +151,9 @@ def test_denormalize_invierte_normalizacion():
     original = torch.rand(3, IMG_SIZE, IMG_SIZE)
     tensor = transforms_normalize(original, mean, std)
     recuperado = denormalize(tensor, mean, std)
-    assert np.allclose(recuperado.transpose(2, 1, 0), original.numpy(), atol=1e-5)
+    # `denormalize` devuelve HWC; se reordena a CHW para comparar.
+    assert recuperado.shape == (IMG_SIZE, IMG_SIZE, 3)
+    assert np.allclose(recuperado.transpose(2, 0, 1), original.numpy(), atol=1e-5)
 
 
 @requiere_dataset

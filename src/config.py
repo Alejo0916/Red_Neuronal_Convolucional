@@ -109,7 +109,7 @@ TRAIN_CONFIG: dict[str, object] = {
     "weight_decay": 5e-4,
     "max_lr_ratio": 10.0,
     "grad_clip": 5.0,
-    "num_workers": 4,
+    "num_workers": 2,
     "seed": SEED,
 }
 

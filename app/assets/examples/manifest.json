@@ -1,0 +1,74 @@
+[
+  {
+    "file": "00_1.png",
+    "class_index": 0,
+    "class_name": "avión",
+    "dataset_index": 3
+  },
+  {
+    "file": "00_2.png",
+    "class_index": 0,
+    "class_name": "avión",
+    "dataset_index": 10
+  },
+  {
+    "file": "01_1.png",
+    "class_index": 1,
+    "class_name": "automóvil",
+    "dataset_index": 6
+  },
+  {
+    "file": "01_2.png",
+    "class_index": 1,
+    "class_name": "automóvil",
+    "dataset_index": 9
+  },
+  {
+    "file": "03_1.png",
+    "class_index": 3,
+    "class_name": "gato",
+    "dataset_index": 0
+  },
+  {
+    "file": "03_2.png",
+    "class_index": 3,
+    "class_name": "gato",
+    "dataset_index": 8
+  },
+  {
+    "file": "05_1.png",
+    "class_index": 5,
+    "class_name": "perro",
+    "dataset_index": 12
+  },
+  {
+    "file": "05_2.png",
+    "class_index": 5,
+    "class_name": "perro",
+    "dataset_index": 16
+  },
+  {
+    "file": "08_1.png",
+    "class_index": 8,
+    "class_name": "barco",
+    "dataset_index": 1
+  },
+  {
+    "file": "08_2.png",
+    "class_index": 8,
+    "class_name": "barco",
+    "dataset_index": 2
+  },
+  {
+    "file": "09_1.png",
+    "class_index": 9,
+    "class_name": "camión",
+    "dataset_index": 11
+  },
+  {
+    "file": "09_2.png",
+    "class_index": 9,
+    "class_name": "camión",
+    "dataset_index": 14
+  }
+]

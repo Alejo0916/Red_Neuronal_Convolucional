@@ -215,7 +215,7 @@ def mostrar_muestras(dataset, muestras_por_clase=8):
             eje = ejes[fila, columna]
             eje.axis("off")
             if columna < len(indices):
-                eje.imshow(dataset.data[indices[column]])
+                eje.imshow(dataset.data[indices[columna]])
                 if columna == 0:
                     eje.set_title(CLASES[fila], fontsize=9, loc="left", fontweight="bold")
     figura.suptitle("Muestras de CIFAR-10 por clase", fontsize=14, fontweight="bold")
@@ -272,6 +272,7 @@ print("desviación canal :", np.round(datos.std(axis=(0, 1, 2)), 4))
 print("canal R difiere de G/B:", round(float(abs(datos.mean(axis=(0, 1, 2))[0] - datos.mean(axis=(0, 1, 2))[1])), 4))"""),
         # ------------------------------------------------------------------ #
         ("code", """# @title 3.1 Transformaciones: augmentation solo en entrenamiento
+from PIL import Image
 from torchvision import transforms
 
 NORMALIZAR = transforms.Normalize(mean=list(MEDIA), std=list(DESVIACION))
@@ -288,8 +289,9 @@ transform_eval = transforms.Compose([
 ])
 
 imagen_cruda = train_set.data[idx_train[0]]
-tensor_01 = transforms.ToTensor()(imagen_cruda)
-tensor_norm = transform_train(imagen_cruda)
+imagen_pil = Image.fromarray(imagen_cruda)
+tensor_01 = transforms.ToTensor()(imagen_pil)
+tensor_norm = transform_train(imagen_pil)
 
 figura, ejes = plt.subplots(1, 3, figsize=(12, 4.2))
 ejes[0].imshow(imagen_cruda)
@@ -304,8 +306,8 @@ figura.suptitle("Pipeline de preprocesamiento", fontweight="bold")
 figura.tight_layout()
 plt.show()
 
-print("Forma del tensor de entrenamiento:", transform_train(imagen_cruda).shape)
-print("Forma del tensor de evaluación  :", transform_eval(imagen_cruda).shape)"""),
+print("Forma del tensor de entrenamiento:", transform_train(imagen_pil).shape)
+print("Forma del tensor de evaluación  :", transform_eval(imagen_pil).shape)"""),
         # ------------------------------------------------------------------ #
         ("markdown", """## 4. División en entrenamiento, validación y prueba
 
@@ -355,11 +357,14 @@ Se aplica **únicamente al conjunto de entrenamiento**:
 En validación y prueba **no** hay augmentation: las métricas deben medir el modelo sobre las imágenes reales, no sobre versiones aleatorias de ellas."""),
         # ------------------------------------------------------------------ #
         ("code", """# @title 5. Ejemplos de augmentation sobre el mismo training set
+from PIL import Image
+
 filas = 4
 figura, ejes = plt.subplots(filas, 8, figsize=(8 * 1.3, filas * 1.5))
 for fila in range(filas):
     indice = idx_train[fila * 37]
     original = train_set.data[indice]
+    original_pil = Image.fromarray(original)
     for columna in range(8):
         eje = ejes[fila, columna]
         eje.axis("off")
@@ -367,7 +372,7 @@ for fila in range(filas):
             eje.imshow(original)
             eje.set_title("original", fontsize=8, fontweight="bold")
         else:
-            eje.imshow(transform_train(original).permute(1, 2, 0).numpy().clip(-2, 2))
+            eje.imshow(transform_train(original_pil).permute(1, 2, 0).numpy().clip(-2, 2))
             if fila == 0 and columna == 1:
                 eje.set_title("augmentations", fontsize=8, fontweight="bold")
 figura.suptitle("Data augmentation aplicada al entrenamiento", fontsize=13, fontweight="bold")

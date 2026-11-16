@@ -207,7 +207,7 @@ def plot_training_curves(history: list[dict[str, float]], path: Path) -> list[Pa
 
 
 def plot_sample_predictions(
-    images: torch.Tensor,
+    dataset: torch.utils.data.Dataset,
     targets: np.ndarray,
     predictions: np.ndarray,
     probabilities: np.ndarray,
@@ -216,7 +216,11 @@ def plot_sample_predictions(
     std: Sequence[float],
     count: int = 12,
 ) -> Path:
-    """Rejilla con la imagen, la clase real, la predicción y su probabilidad."""
+    """Rejilla con la imagen, la clase real, la predicción y su probabilidad.
+
+    Las imágenes se leen bajo demanda del dataset para no cargar en memoria
+    los 10 000 tensores del conjunto de prueba.
+    """
     import matplotlib
 
     matplotlib.use("Agg")
@@ -238,7 +242,7 @@ def plot_sample_predictions(
     axes = np.atleast_1d(axes).ravel()
 
     for axis, index in zip(axes, selected):
-        image = denormalize(images[index], mean, std)
+        image = denormalize(dataset[int(index)][0], mean, std)
         axis.imshow(image)
         real = CLASSES[int(targets[index])]
         predicted = CLASSES[int(predictions[index])]
@@ -322,10 +326,9 @@ def evaluate(
         curves = plot_training_curves(history, FIGURES_DIR / "07_curvas_entrenamiento.png")
         figures["curvas_entrenamiento"] = str(curves[0])
 
-    sample_images = torch.stack([bundle.test_dataset[i][0] for i in range(len(bundle.test_dataset))])
     figures["predicciones_ejemplo"] = str(
         plot_sample_predictions(
-            sample_images,
+            bundle.test_dataset,
             targets,
             predictions,
             probabilities,

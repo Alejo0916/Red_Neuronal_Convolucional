@@ -1,0 +1,351 @@
+{
+  "checkpoint": "C:\\Users\\User\\Documents\\GitHub\\Red_Neuronal_Convolucional\\models\\cnn_cifar10.pt",
+  "device": "cpu",
+  "torch_version": "2.15.0+cpu",
+  "model_config": {
+    "num_classes": 10,
+    "in_channels": 3,
+    "channels": [
+      64,
+      128,
+      256
+    ],
+    "dropout2d": 0.15,
+    "dropout_head": 0.5
+  },
+  "classes": [
+    "avión",
+    "automóvil",
+    "pájaro",
+    "gato",
+    "ciervo",
+    "perro",
+    "rana",
+    "caballo",
+    "barco",
+    "camión"
+  ],
+  "metrics": {
+    "accuracy": 0.8934,
+    "precision_macro": 0.8924879786348852,
+    "recall_macro": 0.8934,
+    "f1_macro": 0.8926190366429957,
+    "num_samples": 10000,
+    "per_class": {
+      "avión": {
+        "precision": 0.8946341463414634,
+        "recall": 0.917,
+        "f1": 0.905679012345679,
+        "support": 1000
+      },
+      "automóvil": {
+        "precision": 0.949050949050949,
+        "recall": 0.95,
+        "f1": 0.9495252373813093,
+        "support": 1000
+      },
+      "pájaro": {
+        "precision": 0.8672839506172839,
+        "recall": 0.843,
+        "f1": 0.8549695740365112,
+        "support": 1000
+      },
+      "gato": {
+        "precision": 0.819910514541387,
+        "recall": 0.733,
+        "f1": 0.7740232312565998,
+        "support": 1000
+      },
+      "ciervo": {
+        "precision": 0.8838133068520357,
+        "recall": 0.89,
+        "f1": 0.8868958644743398,
+        "support": 1000
+      },
+      "perro": {
+        "precision": 0.8246816846229187,
+        "recall": 0.842,
+        "f1": 0.8332508659079664,
+        "support": 1000
+      },
+      "rana": {
+        "precision": 0.903976721629486,
+        "recall": 0.932,
+        "f1": 0.9177744953225012,
+        "support": 1000
+      },
+      "caballo": {
+        "precision": 0.9200394866732478,
+        "recall": 0.932,
+        "f1": 0.9259811227024342,
+        "support": 1000
+      },
+      "barco": {
+        "precision": 0.931439764936337,
+        "recall": 0.951,
+        "f1": 0.9411182582879762,
+        "support": 1000
+      },
+      "camión": {
+        "precision": 0.9300492610837439,
+        "recall": 0.944,
+        "f1": 0.9369727047146402,
+        "support": 1000
+      }
+    },
+    "classification_report": {
+      "avión": {
+        "precision": 0.8946341463414634,
+        "recall": 0.917,
+        "f1-score": 0.905679012345679,
+        "support": 1000.0
+      },
+      "automóvil": {
+        "precision": 0.949050949050949,
+        "recall": 0.95,
+        "f1-score": 0.9495252373813093,
+        "support": 1000.0
+      },
+      "pájaro": {
+        "precision": 0.8672839506172839,
+        "recall": 0.843,
+        "f1-score": 0.8549695740365112,
+        "support": 1000.0
+      },
+      "gato": {
+        "precision": 0.819910514541387,
+        "recall": 0.733,
+        "f1-score": 0.7740232312565998,
+        "support": 1000.0
+      },
+      "ciervo": {
+        "precision": 0.8838133068520357,
+        "recall": 0.89,
+        "f1-score": 0.8868958644743398,
+        "support": 1000.0
+      },
+      "perro": {
+        "precision": 0.8246816846229187,
+        "recall": 0.842,
+        "f1-score": 0.8332508659079664,
+        "support": 1000.0
+      },
+      "rana": {
+        "precision": 0.903976721629486,
+        "recall": 0.932,
+        "f1-score": 0.9177744953225012,
+        "support": 1000.0
+      },
+      "caballo": {
+        "precision": 0.9200394866732478,
+        "recall": 0.932,
+        "f1-score": 0.9259811227024342,
+        "support": 1000.0
+      },
+      "barco": {
+        "precision": 0.931439764936337,
+        "recall": 0.951,
+        "f1-score": 0.9411182582879762,
+        "support": 1000.0
+      },
+      "camión": {
+        "precision": 0.9300492610837439,
+        "recall": 0.944,
+        "f1-score": 0.9369727047146402,
+        "support": 1000.0
+      },
+      "accuracy": 0.8934,
+      "macro avg": {
+        "precision": 0.8924879786348852,
+        "recall": 0.8934,
+        "f1-score": 0.8926190366429957,
+        "support": 10000.0
+      },
+      "weighted avg": {
+        "precision": 0.8924879786348853,
+        "recall": 0.8934,
+        "f1-score": 0.8926190366429957,
+        "support": 10000.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        917,
+        5,
+        22,
+        6,
+        7,
+        1,
+        3,
+        1,
+        27,
+        11
+      ],
+      [
+        4,
+        950,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        7,
+        37
+      ],
+      [
+        31,
+        0,
+        843,
+        17,
+        31,
+        24,
+        33,
+        13,
+        7,
+        1
+      ],
+      [
+        12,
+        5,
+        34,
+        733,
+        31,
+        117,
+        28,
+        21,
+        10,
+        9
+      ],
+      [
+        8,
+        1,
+        19,
+        21,
+        890,
+        14,
+        23,
+        18,
+        4,
+        2
+      ],
+      [
+        7,
+        1,
+        18,
+        77,
+        22,
+        842,
+        8,
+        23,
+        1,
+        1
+      ],
+      [
+        3,
+        0,
+        23,
+        25,
+        5,
+        6,
+        932,
+        3,
+        3,
+        0
+      ],
+      [
+        7,
+        0,
+        7,
+        11,
+        21,
+        17,
+        1,
+        932,
+        1,
+        3
+      ],
+      [
+        27,
+        6,
+        5,
+        2,
+        0,
+        0,
+        2,
+        0,
+        951,
+        7
+      ],
+      [
+        9,
+        33,
+        1,
+        1,
+        0,
+        0,
+        0,
+        2,
+        10,
+        944
+      ]
+    ]
+  },
+  "top_confusions": [
+    {
+      "real": "gato",
+      "predicho": "perro",
+      "casos": 117
+    },
+    {
+      "real": "perro",
+      "predicho": "gato",
+      "casos": 77
+    },
+    {
+      "real": "automóvil",
+      "predicho": "camión",
+      "casos": 37
+    },
+    {
+      "real": "gato",
+      "predicho": "pájaro",
+      "casos": 34
+    },
+    {
+      "real": "pájaro",
+      "predicho": "rana",
+      "casos": 33
+    },
+    {
+      "real": "camión",
+      "predicho": "automóvil",
+      "casos": 33
+    },
+    {
+      "real": "pájaro",
+      "predicho": "avión",
+      "casos": 31
+    },
+    {
+      "real": "pájaro",
+      "predicho": "ciervo",
+      "casos": 31
+    },
+    {
+      "real": "gato",
+      "predicho": "ciervo",
+      "casos": 31
+    },
+    {
+      "real": "gato",
+      "predicho": "rana",
+      "casos": 28
+    }
+  ],
+  "figures": {
+    "matriz_confusion": "C:\\Users\\User\\Documents\\GitHub\\Red_Neuronal_Convolucional\\reports\\figures\\06_matriz_confusion.png",
+    "curvas_entrenamiento": "C:\\Users\\User\\Documents\\GitHub\\Red_Neuronal_Convolucional\\reports\\figures\\04_perdida_entrenamiento.png",
+    "predicciones_ejemplo": "C:\\Users\\User\\Documents\\GitHub\\Red_Neuronal_Convolucional\\reports\\figures\\08_predicciones_ejemplo.png"
+  }
+}

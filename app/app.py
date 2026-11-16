@@ -1,4 +1,4 @@
-"""Aplicación Streamlit: clasificación de imágenes con la CNN entrenada en CIFAR-10.
+﻿"""Aplicación Streamlit: clasificación de imágenes con la CNN entrenada en CIFAR-10.
 
 Arranque:
     streamlit run app/app.py
@@ -6,6 +6,7 @@ Arranque:
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -56,14 +57,31 @@ def load_metrics():
 
 @st.cache_data(show_spinner=False)
 def list_examples() -> list[dict[str, str]]:
-    """Lista las imágenes de ejemplo embebidas en la app."""
+    """Lista las imágenes de ejemplo embebidas en la app.
+
+    La clase verdadera se lee de `manifest.json` (los nombres de archivo
+    contienen acentos y no son fiables para parsearlos).
+    """
     if not EXAMPLES_DIR.exists():
         return []
+
+    manifest_path = EXAMPLES_DIR / "manifest.json"
+    manifest: list[dict[str, object]] = []
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
     examples = []
-    for path in sorted(EXAMPLES_DIR.glob("*.png")):
-        label = path.stem.replace("_", " ")
-        true_class = label.split(" - ")[-1].strip()
-        examples.append({"path": path, "name": path.name, "true_class": true_class})
+    for entry in manifest:
+        path = EXAMPLES_DIR / str(entry["file"])
+        if path.exists():
+            examples.append(
+                {
+                    "path": path,
+                    "name": str(entry["file"]),
+                    "true_class": str(entry["class_name"]),
+                    "class_index": int(entry["class_index"]),
+                }
+            )
     return examples
 
 
@@ -139,6 +157,7 @@ mode = st.radio(
 
 image: Image.Image | None = None
 source_label = ""
+true_class: str | None = None
 
 examples = list_examples()
 
@@ -165,11 +184,15 @@ else:
                 st.image(str(example["path"]), width=110)
                 st.caption(example["true_class"])
 
-        names = [example["name"] for example in examples]
+        names = [
+            f"{example['true_class']} · {example['name']}" for example in examples
+        ]
         selection = st.selectbox("Ejemplo", names, index=0)
-        selected = next(item for item in examples if item["name"] == selection)
+        indice = names.index(selection)
+        selected = examples[indice]
         image = Image.open(selected["path"]).convert("RGB")
         source_label = f"Ejemplo: {selected['true_class']}"
+        true_class = selected["true_class"]
 
 # --------------------------------------------------------------------------- #
 # Predicción
@@ -215,6 +238,15 @@ with right:
         st.warning(f"⚠️ Confianza **media** ({confidence:.2%}).")
     else:
         st.error(f"❌ Confianza **baja** ({confidence:.2%}). La imagen podría no pertenecer a CIFAR-10.")
+
+    if true_class:
+        if true_class == prediction.class_name:
+            st.success(f"🎯 La imagen pertenece a la clase **{true_class}**: el modelo acertó.")
+        else:
+            st.warning(
+                f"🎯 La imagen pertenece a la clase **{true_class}**, "
+                f"pero el modelo la clasificó como **{prediction.class_name}**."
+            )
 
     st.markdown("**Probabilidad por clase**")
     ordered = prediction.top_k

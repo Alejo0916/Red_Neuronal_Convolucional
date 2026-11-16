@@ -106,12 +106,21 @@ def train(
     checkpoint_path: Path = CHECKPOINT_PATH,
     metadata_path: Path = METADATA_PATH,
     history_path: Path = HISTORY_PATH,
+    resume_from: Path | None = None,
 ) -> dict[str, object]:
-    """Entrena el modelo y persiste checkpoint, metadatos e historial."""
+    """Entrena el modelo y persiste checkpoint, metadatos e historial.
+
+    Si `resume_from` apunta a un checkpoint con estado completo (optimizador,
+    scheduler e historial), el entrenamiento continúa desde la última época
+    guardada en lugar de empezar de cero.
+    """
     set_seed(seed)
     resolved_device = resolve_device(device)
     LOGGER.info("Dispositivo: %s", describe_device(resolved_device))
     LOGGER.info("Semilla: %d", seed)
+
+    checkpoint_path = Path(checkpoint_path)
+    last_checkpoint_path = checkpoint_path.with_name(f"{checkpoint_path.stem}_last{checkpoint_path.suffix}")
 
     bundle = build_dataloaders(batch_size=batch_size, num_workers=num_workers, seed=seed)
     mean, std = bundle.mean, bundle.std
@@ -132,16 +141,38 @@ def train(
         anneal_strategy="cos",
     )
 
+    history: list[dict[str, float]] = []
+    start_epoch = 1
+    best_val_accuracy = -1.0
+    best_epoch = -1
+
+    if resume_from is not None and Path(resume_from).exists():
+        estado = torch.load(resume_from, map_location=resolved_device, weights_only=False)
+        model.load_state_dict(estado["state_dict"], strict=True)
+        if "optimizer_state" in estado:
+            optimizer.load_state_dict(estado["optimizer_state"])
+        if "scheduler_state" in estado:
+            scheduler.load_state_dict(estado["scheduler_state"])
+        history = list(estado.get("history", []))
+        start_epoch = int(estado.get("epoch", 0)) + 1
+        best_val_accuracy = float(estado.get("val_accuracy", -1.0))
+        best_epoch = int(estado.get("best_epoch", estado.get("epoch", 0)))
+        LOGGER.info(
+            "Reanudando desde %s (época %d, mejor val acc %.4f)",
+            resume_from,
+            start_epoch,
+            best_val_accuracy,
+        )
+    else:
+        LOGGER.info("Entrenamiento desde cero: %d épocas", epochs)
+
     total_params = count_parameters(model)
     LOGGER.info("Parámetros entrenables: %s", f"{total_params:,}")
     LOGGER.info("Épocas: %d | batch: %d | lr: %g | weight_decay: %g", epochs, batch_size, learning_rate, weight_decay)
 
-    history: list[dict[str, float]] = []
-    best_val_accuracy = -1.0
-    best_epoch = -1
     started = time.time()
 
-    for epoch in range(1, epochs + 1):
+    for epoch in range(start_epoch, epochs + 1):
         epoch_started = time.time()
         train_metrics = run_epoch(
             model,
@@ -194,6 +225,23 @@ def train(
             )
             LOGGER.info("  -> Nuevo mejor modelo (val acc %.4f) guardado en %s", best_val_accuracy, checkpoint_path)
 
+        # Estado completo de la última época: permite reanudar el entrenamiento
+        # si se interrumpe. No se versiona (ver .gitignore).
+        torch.save(
+            {
+                "state_dict": model.state_dict(),
+                "model_config": model_config(model),
+                "normalization": {"mean": list(mean), "std": list(std)},
+                "epoch": epoch,
+                "val_accuracy": best_val_accuracy,
+                "best_epoch": best_epoch,
+                "optimizer_state": optimizer.state_dict(),
+                "scheduler_state": scheduler.state_dict(),
+                "history": history,
+            },
+            last_checkpoint_path,
+        )
+
     total_time = time.time() - started
     LOGGER.info("Entrenamiento finalizado en %.1f min", total_time / 60)
 
@@ -214,7 +262,11 @@ def train(
         "classes": list(CLASSES),
         "dataset": {
             "name": "CIFAR-10",
-            "split": {"train": len(bundle.train_dataset), "val": len(bundle.val_dataset), "test": len(bundle.test_dataset)},
+            "split": {
+                "train": len(bundle.train_dataset),
+                "val": len(bundle.val_dataset),
+                "test": len(bundle.test_dataset),
+            },
         },
         "parameters": total_params,
         "device": describe_device(resolved_device),
@@ -222,7 +274,7 @@ def train(
         "best_epoch": best_epoch,
         "best_val_accuracy": best_val_accuracy,
         "training_seconds": total_time,
-        "checkpoint": str(Path(checkpoint_path).relative_to(PROJECT_ROOT)),
+        "checkpoint": str(checkpoint_path.relative_to(PROJECT_ROOT)),
     }
 
     save_json(metadata, metadata_path)
@@ -248,6 +300,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--checkpoint", type=Path, default=CHECKPOINT_PATH)
     parser.add_argument("--metadata", type=Path, default=METADATA_PATH)
     parser.add_argument("--history", type=Path, default=HISTORY_PATH)
+    parser.add_argument(
+        "--resume-from",
+        type=Path,
+        default=None,
+        help="Checkpoint con estado completo desde el que continuar el entrenamiento",
+    )
     return parser
 
 
@@ -264,6 +322,7 @@ def main(argv: list[str] | None = None) -> int:
         checkpoint_path=args.checkpoint,
         metadata_path=args.metadata,
         history_path=args.history,
+        resume_from=args.resume_from,
     )
     return 0
 

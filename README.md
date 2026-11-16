@@ -1,4 +1,4 @@
-# 🧠 Red Neuronal Convolucional (CNN) para clasificación de imágenes — CIFAR-10
+﻿# 🧠 Red Neuronal Convolucional (CNN) para clasificación de imágenes — CIFAR-10
 
 Proyecto completo de **Deep Learning**: una Red Neuronal Convolucional entrenada desde cero
 para clasificar imágenes en 10 categorías, con dataset documentado, exploración visual,
@@ -183,16 +183,20 @@ Red_Neuronal_Convolucional/
 │   ├── predict.py                  # Inferencia (carga del modelo + predicción)
 │   └── utils.py                    # Semillas, dispositivo, JSON, logging
 ├── tests/
-│   └── test_pipeline.py            # 19 pruebas unitarias
+│   └── test_pipeline.py            # 24 pruebas unitarias
 ├── tools/
 │   ├── build_notebook.py           # Generador del notebook de Colab
+│   ├── check_notebook.py           # Comprobación de sintaxis del notebook
+│   ├── check_notebook_errors.py    # Comprobación de errores en las salidas
 │   ├── download_cifar10.py         # Descarga reanudable de CIFAR-10
 │   ├── export_examples.py          # Exporta imágenes de ejemplo para la app
-│   └── smoke_test.py               # Prueba de humo del pipeline
+│   ├── notebook_summary.py         # Resumen de las salidas del notebook
+│   ├── smoke_test.py               # Prueba de humo del pipeline
+│   └── update_readme_results.py    # Inyecta los resultados en el README
 ├── openspec/
 │   ├── config.yaml                 # Configuración de OpenSpec (idioma: es)
-│   ├── specs/                      # Requisitos duraderos publicados
-│   └── changes/                    # Historial de cambios
+│   ├── specs/                      # Requisitos duraderos publicados (6 capacidades)
+│   └── changes/archive/            # Historial de cambios archivados
 ├── .github/workflows/ci.yml        # Integración continua
 ├── requirements.txt
 ├── README.md
@@ -315,6 +319,44 @@ La app queda disponible en <http://localhost:8501>.
 
 <!-- RESULTADOS:METRICAS -->
 
+### Métricas en el conjunto de prueba (10 000 imágenes)
+
+| Métrica | Valor |
+|---|---:|
+| **Accuracy** | **0.8934** (89.34%) |
+| **Precision** (macro) | 0.8925 |
+| **Recall** (macro) | 0.8934 |
+| **F1** (macro) | 0.8926 |
+| Imágenes evaluadas | 10,000 |
+
+Mejor época de validación: **época 20** con accuracy **0.9030**
+(pérdida de validación 0.3064). Entrenamiento completo: 20 épocas.
+
+### Métricas por clase
+
+| Clase | Precision | Recall | F1 | Soporte |
+|---|---:|---:|---:|---:|
+| avión | 0.8946 | 0.9170 | 0.9057 | 1,000 |
+| automóvil | 0.9491 | 0.9500 | 0.9495 | 1,000 |
+| pájaro | 0.8673 | 0.8430 | 0.8550 | 1,000 |
+| gato | 0.8199 | 0.7330 | 0.7740 | 1,000 |
+| ciervo | 0.8838 | 0.8900 | 0.8869 | 1,000 |
+| perro | 0.8247 | 0.8420 | 0.8333 | 1,000 |
+| rana | 0.9040 | 0.9320 | 0.9178 | 1,000 |
+| caballo | 0.9200 | 0.9320 | 0.9260 | 1,000 |
+| barco | 0.9314 | 0.9510 | 0.9411 | 1,000 |
+| camión | 0.9300 | 0.9440 | 0.9370 | 1,000 |
+
+### Pares de clases más confundidos
+
+| Clase real | Clase predicha | Casos |
+|---|---|---:|
+| gato | perro | 117 |
+| perro | gato | 77 |
+| automóvil | camión | 37 |
+| gato | pájaro | 34 |
+| pájaro | rana | 33 |
+
 ### Curvas del entrenamiento
 
 | Pérdida | Accuracy |
@@ -334,6 +376,8 @@ La app queda disponible en <http://localhost:8501>.
 ![Muestras por clase](reports/figures/01_muestras_por_clase.png)
 
 ![Distribución de clases](reports/figures/02_distribucion_clases.png)
+
+![Preprocesamiento](reports/figures/03_preprocesamiento.png)
 
 <!-- RESULTADOS:FIN -->
 
@@ -393,7 +437,7 @@ reentrenar desde cero en Colab, pon a `True` la bandera `ENTRENAR_DESDE_CERO` de
 
 El proyecto usa [OpenSpec](https://github.com/Fission-AI/OpenSpec) como capa de
 especificación: los **requisitos duraderos** viven en `openspec/specs/` y el **historial de
-cambios** en `openspec/changes/`.
+cambios** en `openspec/changes/archive/`.
 
 ```bash
 npm install -g @fission-ai/openspec@latest
@@ -404,7 +448,7 @@ openspec validate --strict    # validar los requisitos
 openspec show <capacidad>     # leer una especificación
 ```
 
-**Capacidades publicadas**
+**Capacidades publicadas** (`openspec/specs/`)
 
 | Capacidad | Qué define |
 |---|---|
@@ -415,6 +459,21 @@ openspec show <capacidad>     # leer una especificación
 | `experiment-notebook` | El notebook de Colab y su cobertura |
 | `project-docs` | README, dependencias, exclusiones y CI |
 
+El cambio que implementa este proyecto está archivado en
+`openspec/changes/archive/2026-11-15-cnn-cifar10-clasificador-imagenes/` con su propuesta,
+diseño técnico, 6 especificaciones delta y las **39 tareas** de implementación marcadas como
+completadas.
+
+**Historial de cambios** (`openspec/changes/archive/`)
+
+| Cambio | Estado | Contenido |
+|---|---|---|
+| `2026-11-15-cnn-cifar10-clasificador-imagenes` | ✅ Archivado | Propuesta, diseño, 6 especificaciones y las 39 tareas de implementación (todas completadas) |
+
+La especificación se escribió **antes** de implementar el código y se archivó **después** de
+verificarlo: cada requisito de `openspec/specs/` tiene su escenario comprobable en
+`tests/`.
+
 ---
 
 ## 🧪 Pruebas y CI
@@ -423,7 +482,7 @@ openspec show <capacidad>     # leer una especificación
 python -m pytest tests -v
 ```
 
-19 pruebas cubren: forma de la salida de la red, número de parámetros, determinismo de la
+24 pruebas cubren: forma de la salida de la red, número de parámetros, determinismo de la
 semilla, estratificación y disjointness de la división, presencia de augmentation
 **solo** en entrenamiento, inversión de la normalización, errores claros al cargar un
 checkpoint ausente o corrupto, suma de probabilidades = 1 y round-trip del checkpoint.

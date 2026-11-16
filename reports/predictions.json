@@ -1,0 +1,86 @@
+[
+  {
+    "indice": 0,
+    "real": "gato",
+    "predicho": "gato",
+    "probabilidad": 0.989676296710968,
+    "acierto": true
+  },
+  {
+    "indice": 1,
+    "real": "barco",
+    "predicho": "barco",
+    "probabilidad": 0.9999788999557495,
+    "acierto": true
+  },
+  {
+    "indice": 2,
+    "real": "barco",
+    "predicho": "barco",
+    "probabilidad": 0.9996090531349182,
+    "acierto": true
+  },
+  {
+    "indice": 4,
+    "real": "rana",
+    "predicho": "rana",
+    "probabilidad": 0.9999916553497314,
+    "acierto": true
+  },
+  {
+    "indice": 5,
+    "real": "rana",
+    "predicho": "rana",
+    "probabilidad": 0.9699068665504456,
+    "acierto": true
+  },
+  {
+    "indice": 6,
+    "real": "automóvil",
+    "predicho": "automóvil",
+    "probabilidad": 0.9940409064292908,
+    "acierto": true
+  },
+  {
+    "indice": 3,
+    "real": "avión",
+    "predicho": "barco",
+    "probabilidad": 0.5753302574157715,
+    "acierto": false
+  },
+  {
+    "indice": 24,
+    "real": "perro",
+    "predicho": "ciervo",
+    "probabilidad": 0.5231207609176636,
+    "acierto": false
+  },
+  {
+    "indice": 35,
+    "real": "pájaro",
+    "predicho": "barco",
+    "probabilidad": 0.5172610282897949,
+    "acierto": false
+  },
+  {
+    "indice": 37,
+    "real": "automóvil",
+    "predicho": "camión",
+    "probabilidad": 0.8691353797912598,
+    "acierto": false
+  },
+  {
+    "indice": 58,
+    "real": "ciervo",
+    "predicho": "perro",
+    "probabilidad": 0.591805100440979,
+    "acierto": false
+  },
+  {
+    "indice": 59,
+    "real": "rana",
+    "predicho": "gato",
+    "probabilidad": 0.8138616681098938,
+    "acierto": false
+  }
+]

@@ -19,6 +19,7 @@ from typing import Iterable, Sequence
 
 import numpy as np
 import torch
+from PIL import Image
 from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
@@ -168,11 +169,17 @@ def build_datasets(
 def build_dataloaders(
     root: str | Path = DATA_DIR,
     batch_size: int = 128,
-    num_workers: int = 4,
+    num_workers: int = 2,
     seed: int = SEED,
     download: bool = True,
 ) -> DataBundle:
-    """Construye datasets y `DataLoader` reproducibles para train/val/test."""
+    """Construye datasets y `DataLoader` reproducibles para train/val/test.
+
+    Nota de memoria: en Windows cada worker de `DataLoader` se crea con `spawn`
+    y recibe una **copia** del dataset (~150 MB). Por eso el loader de
+    validación y el de prueba usan `num_workers=0` y el de entrenamiento
+    limita `num_workers` (2 por defecto).
+    """
     train_ds, val_ds, test_ds, mean, std, train_idx, val_idx = build_datasets(
         root=root, seed=seed, download=download
     )
@@ -180,18 +187,22 @@ def build_dataloaders(
     generator = torch.Generator()
     generator.manual_seed(seed)
 
-    common = {
-        "batch_size": batch_size,
-        "num_workers": num_workers,
-        "pin_memory": torch.cuda.is_available(),
-        "worker_init_fn": seed_worker,
-        "generator": generator,
-        "persistent_workers": num_workers > 0,
-    }
+    def make_loader(dataset: Dataset, shuffle: bool, workers: int) -> DataLoader:
+        return DataLoader(
+            dataset,
+            batch_size=batch_size,
+            shuffle=shuffle,
+            drop_last=False,
+            num_workers=workers,
+            pin_memory=torch.cuda.is_available(),
+            worker_init_fn=seed_worker,
+            generator=generator,
+            persistent_workers=False,
+        )
 
-    train_loader = DataLoader(train_ds, shuffle=True, drop_last=False, **common)
-    val_loader = DataLoader(val_ds, shuffle=False, drop_last=False, **common)
-    test_loader = DataLoader(test_ds, shuffle=False, drop_last=False, **common)
+    train_loader = make_loader(train_ds, True, max(0, num_workers))
+    val_loader = make_loader(val_ds, False, 0)
+    test_loader = make_loader(test_ds, False, 0)
 
     raw_train = load_cifar10(root=root, download=False, train=True)
     raw_test = load_cifar10(root=root, download=False, train=False)
@@ -307,9 +318,10 @@ def plot_preprocessing_comparison(
     import matplotlib.pyplot as plt
 
     raw = dataset.data[index]
-    tensor_01 = transforms.ToTensor()(raw)
+    pil = Image.fromarray(raw)
+    tensor_01 = transforms.ToTensor()(pil)
     train_transform, _, _ = build_transforms(mean, std)
-    normalized = train_transform(raw)
+    normalized = train_transform(pil)
 
     fig, axes = plt.subplots(1, 3, figsize=(11.5, 4.2))
     axes[0].imshow(raw)

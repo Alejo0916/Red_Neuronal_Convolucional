@@ -1,0 +1,54 @@
+{
+  "model_config": {
+    "num_classes": 10,
+    "in_channels": 3,
+    "channels": [
+      64,
+      128,
+      256
+    ],
+    "dropout2d": 0.15,
+    "dropout_head": 0.5
+  },
+  "train_config": {
+    "epochs": 20,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0005,
+    "optimizer": "AdamW",
+    "scheduler": "OneCycleLR",
+    "criterion": "CrossEntropyLoss",
+    "seed": 42
+  },
+  "normalization": {
+    "mean": [
+      0.49113735123911295,
+      0.48211118702342115,
+      0.4464489876089326
+    ],
+    "std": [
+      0.24686913619557826,
+      0.24343012612627368,
+      0.2616033939151677
+    ]
+  },
+  "classes": [
+    "avión",
+    "automóvil",
+    "pájaro",
+    "gato",
+    "ciervo",
+    "perro",
+    "rana",
+    "caballo",
+    "barco",
+    "camión"
+  ],
+  "parameters": 1148874,
+  "device": "cpu",
+  "torch_version": "2.15.0+cpu",
+  "best_epoch": 20,
+  "best_val_accuracy": 0.903,
+  "test_accuracy": 0.8934,
+  "checkpoint": "models/cnn_cifar10.pt"
+}
