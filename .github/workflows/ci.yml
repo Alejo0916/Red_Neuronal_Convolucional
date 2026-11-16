@@ -36,16 +36,22 @@ jobs:
       - name: Instalar PyTorch (wheels de CPU)
         run: |
           python -m pip install --upgrade pip
-          # El índice de PyTorch no incluye las dependencias transitivas, por eso
-          # se añade PyPI como índice extra.
-          pip install torch==2.15.0+cpu \
+          # torch y torchvision deben instalarse JUNTOS y desde el mismo índice:
+          # la build de torchvision publicada en PyPI está compilada contra el
+          # build de torch con CUDA y falla con "operator torchvision::nms does
+          # not exist" si se combina con un torch de CPU.
+          # PyPI se añade como índice extra para las dependencias transitivas.
+          pip install torch==2.15.0+cpu torchvision==0.29.2+cpu \
             --index-url https://download.pytorch.org/whl/cpu \
             --extra-index-url https://pypi.org/simple
 
       - name: Instalar el resto de dependencias
         run: |
+          # torch/torchvision ya están instalados en la versión +cpu, que satisface
+          # los pins de requirements.txt, así que no se vuelven a descargar.
           pip install -r requirements.txt
           pip install pytest
+          python -c "import torch, torchvision; print('torch', torch.__version__, '| torchvision', torchvision.__version__)"
 
       - name: Comprobar que el paquete `src` es importable
         run: |
