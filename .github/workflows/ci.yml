@@ -15,7 +15,7 @@ jobs:
   verificar:
     name: Verificación del proyecto
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Clonar el repositorio
@@ -24,13 +24,26 @@ jobs:
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          # 3.13 es la versión con wheels disponibles para todas las dependencias fijadas.
+          python-version: "3.13"
           cache: pip
 
-      - name: Instalar dependencias
+      - name: Configurar Node.js (para OpenSpec)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar PyTorch (wheels de CPU)
         run: |
           python -m pip install --upgrade pip
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          # El índice de PyTorch no incluye las dependencias transitivas, por eso
+          # se añade PyPI como índice extra.
+          pip install torch==2.15.0+cpu \
+            --index-url https://download.pytorch.org/whl/cpu \
+            --extra-index-url https://pypi.org/simple
+
+      - name: Instalar el resto de dependencias
+        run: |
           pip install -r requirements.txt
           pip install pytest
 
@@ -53,6 +66,7 @@ jobs:
           imagen = Image.fromarray(np.random.randint(0, 256, (32, 32, 3), dtype=np.uint8))
           prediccion = predict_image(model, imagen, device="cpu")
           assert prediccion.class_name in metadata["classes"], prediccion
+          assert abs(sum(prediccion.probabilities) - 1.0) < 1e-5
           print(f"Modelo OK -> {prediccion.class_name} ({prediccion.confidence:.2%})")
           PY
 
@@ -60,12 +74,12 @@ jobs:
         run: python -m pytest tests -q
 
       - name: Validar las especificaciones de OpenSpec
-        run: |
-          npx --yes @fission-ai/openspec@latest validate --strict
+        run: npx --yes @fission-ai/openspec@latest validate --specs --strict
 
       - name: Comprobar que el README documenta los comandos principales
         run: |
           grep -q "streamlit run app/app.py" README.md
           grep -q "python -m src.train" README.md
           grep -q "python -m src.evaluate" README.md
+          grep -q "python tools/download_cifar10.py" README.md
           echo "README OK"
